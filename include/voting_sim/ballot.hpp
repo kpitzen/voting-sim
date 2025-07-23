@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
 
-struct Ballot{
+struct Ballot {
     std::vector<int> rankedCandidates;
 };

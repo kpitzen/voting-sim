@@ -1,6 +1,5 @@
 
-# This assumes test_main.cpp is a standalone test binary.
-add_executable(voting_sim_tests test_main.cpp)
+add_executable(voting_sim_tests test_generator.cpp)
 target_link_libraries(voting_sim_tests PRIVATE voting_sim_lib gtest_main)
 
 include(GoogleTest)
