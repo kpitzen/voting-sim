@@ -1,5 +1,5 @@
-#include "voting_sim/ballot.hpp"
 #include "voting_sim/generator.hpp"
+#include "voting_sim/ballot.hpp"
 #include <random>
 #include <algorithm>
 

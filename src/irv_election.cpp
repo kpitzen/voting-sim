@@ -6,14 +6,14 @@
 
 std::vector<int> IRVElection::runElection() {
     std::unordered_set<int> eliminated;
-    std::vector<Ballot> submittedBallots = getBallots();
-    std::vector<Candidate> submittedCandidates = getCandidates();
+    std::vector<voting_sim::Ballot> submittedBallots = getBallots();
+    std::vector<voting_sim::Candidate> submittedCandidates = getCandidates();
     int numVoters = submittedBallots.size();
 
     while (true) {
         std::unordered_map<int, int> voteCounts;
 
-        for (const Ballot& ballot : submittedBallots) {
+        for (const voting_sim::Ballot& ballot : submittedBallots) {
             for (int choice : ballot.rankedCandidates) {
                 if (eliminated.count(choice) == 0) {
                     voteCounts[choice]++;

@@ -1,54 +1,83 @@
-#include "voting_sim/irv_election.hpp"
 #include "voting_sim/generator.hpp"
+#include "voting_sim/irv_election.hpp"
+#include "CLI/CLI.hpp"
+
+#include <fstream>
 #include <iostream>
 
-using namespace voting_sim;
+#include <nlohmann/json.hpp>
 
-int main() {
-    IRVElection election;
+int main(int argc, char** argv) {
+    CLI::App app{"Ranked-choice voting simulator"};
 
-    const int numCandidates = 5;
-    const int numVoters = 100;
-    const int seed = 42;
+    // === "run" subcommand ===
+    auto run = app.add_subcommand("run", "Run a scenario and print results");
 
-    election.setNumWinners(1);
+    std::string scenarioFile;
+    bool useGenerated = false;
+    run->add_option("-f,--file", scenarioFile, "Path to scenario JSON");
+    run->add_flag("-g,--generate", useGenerated, "Use a random generated scenario");
 
-    for (int i = 0; i < numCandidates; ++i)
-    {
-        election.addCandidate({i, "Candidate " + std::to_string(i)});
+    // === "generate" subcommand ===
+    auto generate = app.add_subcommand("generate", "Generate and save a random scenario");
+
+    std::string outputPath = "scenario.json";
+    int numCandidates = 5, numVoters = 100, numWinners = 1;
+    generate->add_option("-o,--output", outputPath, "Output scenario file");
+    generate->add_option("--candidates", numCandidates, "Number of candidates");
+    generate->add_option("--voters", numVoters, "Number of voters");
+    generate->add_option("--winners", numWinners, "Number of winners");
+
+    app.require_subcommand();
+    CLI11_PARSE(app, argc, argv);
+
+    // === handle generate ===
+    if (generate->parsed()) {
+        auto scenario = voting_sim::generateScenario("Generated Scenario", numCandidates, numVoters, numWinners);
+        std::ofstream out(outputPath);
+        nlohmann::json j = scenario;
+        out << j.dump(2);
+        std::cout << "Scenario saved to " << outputPath << "\n";
+        return 0;
     }
 
-    auto ballots = voting_sim::generateRandomBallots(numVoters, numCandidates, seed);
-    for (const auto& b : ballots)
-    {
-        election.addBallot(b);
+    // === handle run ===
+    if (run->parsed()) {
+        voting_sim::Scenario scenario;
+        if (useGenerated) {
+            scenario = voting_sim::generateScenario("Generated", 5, 100, 1);
+        } else if (!scenarioFile.empty()) {
+            std::ifstream in(scenarioFile);
+            scenario = nlohmann::json::parse(in).get<voting_sim::Scenario>();
+        } else {
+            std::cerr << "Please provide --file or --generate for 'run'\n";
+            return 1;
+        }
+
+        IRVElection election;
+        election.setNumWinners(scenario.numWinners);
+        for (const auto& c : scenario.candidates) election.addCandidate(c);
+        for (const auto& b : scenario.ballots) election.addBallot(b);
+
+        auto winners = election.runElection();
+        const auto& rounds = election.getRoundHistory();
+
+        std::cout << "Winner(s): ";
+        for (int w : winners) std::cout << w << " ";
+        std::cout << "\n";
+
+        for (const auto& round : rounds) {
+            std::cout << "Round " << round.roundNumber << ":\n";
+            for (auto& [id, count] : round.voteCounts) {
+                std::cout << "  Candidate " << id << ": " << count << " votes\n";
+            }
+            if (!round.eliminated.empty()) {
+                std::cout << "  Eliminated: ";
+                for (int id : round.eliminated) std::cout << id << " ";
+                std::cout << "\n";
+            }
+        }
     }
 
-    auto winners = election.runElection();
-    std::cout << "Winner(s): ";
-    for (int id_ : winners)
-    {
-        std::cout << id_ << " ";
-    }
-    std::cout << "\n";
-
-    voting_sim::ClusteredPreferences prefs{3, {}, 0.2};
-
-    voting_sim::Scenario s = generateScenario(
-        "Three-Cluster Sim",
-        /*numCandidates=*/6,
-        /*numVoters=*/1000,
-        /*numWinners=*/1,
-        prefs,
-        /*minRank=*/3,
-        /*maxRank=*/5,
-        /*seed=*/123
-    );
-
-    std::cout << "Scenario: " << s.name << "\n";
-    std::cout << "Candidates:\n";
-    for (const auto& c : s.candidates) {
-        std::cout << "  " << c.id << ": " << c.name << "\n";
-    }
-    std::cout << "Ballots generated: " << s.ballots.size() << "\n";
+    return 0;
 }

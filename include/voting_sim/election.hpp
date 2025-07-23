@@ -5,8 +5,8 @@
 
 class Election {
 private:
-    std::vector<Candidate> candidates;
-    std::vector<Ballot> ballots;
+    std::vector<voting_sim::Candidate> candidates;
+    std::vector<voting_sim::Ballot> ballots;
     int numWinners = 1;
 
 public:
@@ -14,24 +14,24 @@ public:
 
     void setNumWinners(int numWinners_) { numWinners = numWinners_; }
 
-    void addCandidate(const Candidate& candidate) {
+    void addCandidate(const voting_sim::Candidate& candidate) {
         candidates.push_back(candidate);
     }
 
-    void addBallot(const Ballot& ballot) {
+    void addBallot(const voting_sim::Ballot& ballot) {
         ballots.push_back(ballot);
     }
 
-    std::vector<Candidate> getCandidates() {
+    std::vector<voting_sim::Candidate> getCandidates() {
         return candidates;
     }
 
-    std::vector<Ballot> getBallots() {
+    std::vector<voting_sim::Ballot> getBallots() {
         return ballots;
     }
 
-    [[nodiscard]] const std::vector<Candidate>& getCandidates() const { return candidates; }
-    [[nodiscard]] const std::vector<Ballot>& getBallots() const { return ballots; }
+    [[nodiscard]] const std::vector<voting_sim::Candidate>& getCandidates() const { return candidates; }
+    [[nodiscard]] const std::vector<voting_sim::Ballot>& getBallots() const { return ballots; }
     [[nodiscard]] int getNumWinners() const { return numWinners; }
 
     // Return a vector of winning candidate IDs (size = K)

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "ballot.hpp"
-#include "scenario.hpp"
+#include "voting_sim/scenario.hpp"
 #include <vector>
 #include <optional>
 
