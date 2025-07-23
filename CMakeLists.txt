@@ -25,6 +25,7 @@ FetchContent_MakeAvailable(googletest)
 add_library(voting_sim_lib STATIC
     src/irv_election.cpp
     src/scenario.cpp
+    src/generator.cpp
 )
 
 target_include_directories(voting_sim_lib PUBLIC

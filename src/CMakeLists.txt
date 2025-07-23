@@ -1,5 +1,6 @@
 add_library(voting_sim_lib STATIC
     irv_election.cpp
+    generator.cpp
 )
 
 target_include_directories(voting_sim_lib PUBLIC
