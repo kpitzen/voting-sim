@@ -76,3 +76,26 @@ TEST(PartialBallotTest, HonorsMinAndMaxRankedRange) {
         EXPECT_LE(b.rankedCandidates.size(), maxRank);
     }
 }
+
+TEST(ScenarioGenerationTest, ProducesValidScenario) {
+    ClusteredPreferences prefs{2, {}, 0.1};
+
+    Scenario s = generateScenario(
+        "Clustered Partial Test",
+        5,   // candidates
+        200, // voters
+        1,   // winners
+        prefs,
+        2,   // minRank
+        4,   // maxRank
+        42   // seed
+    );
+
+    EXPECT_EQ(s.candidates.size(), 5);
+    EXPECT_EQ(s.ballots.size(), 200);
+
+    for (const auto& b : s.ballots) {
+        EXPECT_GE(b.rankedCandidates.size(), 2);
+        EXPECT_LE(b.rankedCandidates.size(), 4);
+    }
+}

@@ -2,6 +2,8 @@
 #include "voting_sim/generator.hpp"
 #include <iostream>
 
+using namespace voting_sim;
+
 int main() {
     IRVElection election;
 
@@ -29,4 +31,24 @@ int main() {
         std::cout << id_ << " ";
     }
     std::cout << "\n";
+
+    voting_sim::ClusteredPreferences prefs{3, {}, 0.2};
+
+    voting_sim::Scenario s = generateScenario(
+        "Three-Cluster Sim",
+        /*numCandidates=*/6,
+        /*numVoters=*/1000,
+        /*numWinners=*/1,
+        prefs,
+        /*minRank=*/3,
+        /*maxRank=*/5,
+        /*seed=*/123
+    );
+
+    std::cout << "Scenario: " << s.name << "\n";
+    std::cout << "Candidates:\n";
+    for (const auto& c : s.candidates) {
+        std::cout << "  " << c.id << ": " << c.name << "\n";
+    }
+    std::cout << "Ballots generated: " << s.ballots.size() << "\n";
 }

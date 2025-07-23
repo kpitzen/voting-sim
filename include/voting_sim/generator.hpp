@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ballot.hpp"
+#include "scenario.hpp"
 #include <vector>
 #include <optional>
 
@@ -28,6 +29,17 @@ namespace voting_sim {
         std::optional<unsigned> seed = {},
         std::optional<int> minRankedCandidates = {},
         std::optional<int> maxRankedCandidates = {}
+    );
+
+    Scenario generateScenario(
+        std::string name,
+        int numCandidates,
+        int numVoters,
+        int numWinners,
+        const ClusteredPreferences& prefs = ClusteredPreferences{1, {}, 0.0},
+        std::optional<int> minRank = {},
+        std::optional<int> maxRank = {},
+        std::optional<unsigned> seed = {}
     );
 
 } // namespace voting_sim
