@@ -36,4 +36,5 @@ public:
 
     // Return a vector of winning candidate IDs (size = K)
     virtual std::vector<int> runElection() = 0;
+
 };
