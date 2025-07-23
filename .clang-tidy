@@ -1,0 +1,19 @@
+Checks: >
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  readability-*,
+  modernize-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-owning-memory,
+  -modernize-use-trailing-return-type,
+  -clang-analyzer-cplusplus.NewDeleteLeaks
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+FormatStyle: file
+CheckOptions:
+  - { key: modernize-use-nullptr.NullMacros, value: 'NULL' }
+  - { key: modernize-use-auto.MinTypeNameLength, value: '5' }
+SystemHeaders: false

@@ -1,0 +1,28 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+IncludeBlocks: Preserve
+SortIncludes: true
+IncludeCategories:
+  - Regex:           '^<.*\.h>'
+    Priority:        1
+  - Regex:           '^"voting_sim/.*"'
+    Priority:        2
+  - Regex:           '.*'
+    Priority:        3
+
+SpacesBeforeTrailingComments: 1
+AllowShortFunctionsOnASingleLine: Inline
+BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterFunction: true
+  AfterClass: true
+  AfterControlStatement: true
+  BeforeElse: true
+  IndentBraces: false
+
+PointerAlignment: Left
+SpaceBeforeParens: ControlStatements
