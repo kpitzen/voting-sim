@@ -6,6 +6,11 @@ add_library(voting_sim_lib
     candidate.cpp
     election.cpp
     irv_election.cpp
+    borda_election.cpp
+    stv_election.cpp
+    schulze_election.cpp
+    coombs_election.cpp
+    election_factory.cpp
     generator.cpp
     scenario.cpp
     # any other logic-only .cpp files

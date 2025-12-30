@@ -39,7 +39,7 @@ inline Scenario needs_elimination_irv() {
             {{1, 2, 0}},
             {{0, 2, 1}}
         },
-        {1}, // Bob wins after Carol eliminated
+        {2}, // Carol wins after Alice eliminated (Alice=1 eliminated, her vote goes to Carol)
         1
     };
 }
