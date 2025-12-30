@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include "voting_sim/generator.hpp"
+#include "voting_sim/election_factory.hpp"
+#include <set>
 
 using namespace voting_sim;
 
@@ -97,5 +99,77 @@ TEST(ScenarioGenerationTest, ProducesValidScenario) {
     for (const auto& b : s.ballots) {
         EXPECT_GE(b.rankedCandidates.size(), 2);
         EXPECT_LE(b.rankedCandidates.size(), 4);
+    }
+}
+
+TEST(GeneratorCompatibilityTest, NoDuplicateCandidates) {
+    const int numVoters = 100;
+    const int numCandidates = 5;
+    const int seed = 42;
+
+    auto ballots = generateRandomBallots(numVoters, numCandidates, seed);
+
+    for (const auto& ballot : ballots) {
+        std::set<int> seen;
+        for (int candidateId : ballot.rankedCandidates) {
+            EXPECT_GE(candidateId, 0) << "Candidate ID must be non-negative";
+            EXPECT_LT(candidateId, numCandidates) << "Candidate ID must be less than numCandidates";
+            EXPECT_EQ(seen.count(candidateId), 0) << "Duplicate candidate ID found in ballot";
+            seen.insert(candidateId);
+        }
+    }
+}
+
+TEST(GeneratorCompatibilityTest, ValidCandidateIDs) {
+    const int numVoters = 50;
+    const int numCandidates = 10;
+    const int seed = 123;
+
+    auto ballots = generateRandomBallots(numVoters, numCandidates, seed, 3, 7);
+
+    for (const auto& ballot : ballots) {
+        for (int candidateId : ballot.rankedCandidates) {
+            EXPECT_GE(candidateId, 0);
+            EXPECT_LT(candidateId, numCandidates);
+        }
+    }
+}
+
+TEST(GeneratorCompatibilityTest, AllElectionMethodsCanProcess) {
+    // Generate a scenario and verify all election methods can process it
+    Scenario scenario = generateScenario(
+        "Compatibility Test",
+        5,   // candidates
+        20,  // voters
+        1,   // winners
+        ClusteredPreferences{2, {}, 0.1},
+        2,   // minRank
+        5,   // maxRank
+        999  // seed
+    );
+
+    std::vector<ElectionMethod> methods = {
+        ElectionMethod::IRV,
+        ElectionMethod::BORDA,
+        ElectionMethod::STV,
+        ElectionMethod::SCHULZE,
+        ElectionMethod::COOMBS
+    };
+
+    for (ElectionMethod method : methods) {
+        auto election = ElectionFactory::create(method);
+        election->setNumWinners(scenario.numWinners);
+        
+        for (const auto& candidate : scenario.candidates) {
+            election->addCandidate(candidate);
+        }
+        
+        for (const auto& ballot : scenario.ballots) {
+            election->addBallot(ballot);
+        }
+        
+        // Should not throw or crash
+        auto winners = election->runElection();
+        EXPECT_GE(winners.size(), 0) << "Method " << ElectionFactory::toString(method) << " should return results";
     }
 }
