@@ -2,6 +2,8 @@
 #include "voting_sim/ballot.hpp"
 #include <random>
 #include <algorithm>
+#include <set>
+#include <cassert>
 
 namespace voting_sim {
 
@@ -35,10 +37,9 @@ namespace voting_sim {
             length = pickRankingLength(minRank, maxRank, rng);
         }
         std::vector<Ballot> ballots;
-        std::vector<int> base(numCandidates);
-
-        for (int i = 0; i < numCandidates; ++i)
-        {
+        std::vector<int> base;
+        base.reserve(numCandidates);
+        for (int i = 0; i < numCandidates; ++i) {
             base.push_back(i);
         }
 
@@ -46,7 +47,19 @@ namespace voting_sim {
             std::vector<int> ranking = base;
             std::shuffle(ranking.begin(), ranking.end(), rng);
             ranking.resize(length);
-            ballots.emplace_back(Ballot{ranking});
+            
+            // Ensure no duplicates and valid candidate IDs
+            std::set<int> seen;
+            std::vector<int> validRanking;
+            validRanking.reserve(length);
+            for (int candidateId : ranking) {
+                if (candidateId >= 0 && candidateId < numCandidates && !seen.contains(candidateId)) {
+                    validRanking.push_back(candidateId);
+                    seen.insert(candidateId);
+                }
+            }
+            
+            ballots.emplace_back(Ballot{validRanking});
         }
 
         return ballots;
@@ -102,7 +115,19 @@ namespace voting_sim {
             }
 
             ranking.resize(length);
-            ballots.emplace_back(Ballot{ranking});
+            
+            // Ensure no duplicates and valid candidate IDs
+            std::set<int> seen;
+            std::vector<int> validRanking;
+            validRanking.reserve(length);
+            for (int candidateId : ranking) {
+                if (candidateId >= 0 && candidateId < numCandidates && !seen.contains(candidateId)) {
+                    validRanking.push_back(candidateId);
+                    seen.insert(candidateId);
+                }
+            }
+            
+            ballots.emplace_back(Ballot{validRanking});
         }
 
         return ballots;

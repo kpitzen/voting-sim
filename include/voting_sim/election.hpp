@@ -1,6 +1,7 @@
 #pragma once
 #include "candidate.hpp"
 #include "ballot.hpp"
+#include "results.hpp"
 #include <vector>
 
 class Election {
@@ -36,5 +37,11 @@ public:
 
     // Return a vector of winning candidate IDs (size = K)
     virtual std::vector<int> runElection() = 0;
+
+    // Return round-by-round history (empty if method doesn't use rounds)
+    virtual const std::vector<voting_sim::RoundResult>& getRoundHistory() const {
+        static const std::vector<voting_sim::RoundResult> empty;
+        return empty;
+    }
 
 };

@@ -2,6 +2,8 @@ enable_testing()
 
 add_executable(voting_sim_tests
     test_generator.cpp
+    test_election_methods.cpp
+    test_ballot_election_compatibility.cpp
     # add other tests here
 )
 
